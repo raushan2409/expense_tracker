@@ -1,13 +1,12 @@
-import "./App.css";
-import RegistrationPage from "./components/Pages/RegistrationPage";
-import RegistrationPageByme from "./components/Pages/RegistrationPageByme";
+import AllRoutes from "./components/AllRoutes/AllRoutes";
+import Navbar from "./components/Pages/Navbar";
 
+import RegistrationPageByme from "./components/Pages/RegistrationPageByme";
 
 function App() {
   return (
     <>
-      {/* <RegistrationPage /> */}
-      <RegistrationPageByme />
+      <AllRoutes />
     </>
   );
 }

@@ -1,11 +1,20 @@
 import axios from "axios";
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
+import Navbar from "./Navbar";
+import AuthContext from "../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function RegistrationPageByme() {
   const [isLogin, setIsLogin] = useState(false);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
+
+  // for navigate
+  const navigate = useNavigate();
+
+  const authCtx = useContext(AuthContext);
+  console.log("authCtx", authCtx);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -45,9 +54,14 @@ export default function RegistrationPageByme() {
         console.log("response", response);
         if (response.status === 200) {
           const data = response.data;
+          // console.log("data.idtoken",data.idToken);
+          authCtx.login(data.idToken);
+          console.log("authctx.login", authCtx.login);
           console.log("Login succesfully");
           localStorage.setItem("idToken", data.idToken);
           localStorage.setItem("email", data.email);
+
+          navigate("/homepage");
         } else {
           let errorMessage = "Authentication failed!";
           throw new Error(errorMessage);
