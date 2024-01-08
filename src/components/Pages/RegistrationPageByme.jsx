@@ -14,7 +14,7 @@ export default function RegistrationPageByme() {
   const navigate = useNavigate();
 
   const authCtx = useContext(AuthContext);
-  console.log("authCtx", authCtx);
+  // console.log("authCtx", authCtx);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -56,7 +56,7 @@ export default function RegistrationPageByme() {
           const data = response.data;
           // console.log("data.idtoken",data.idToken);
           authCtx.login(data.idToken);
-          console.log("authctx.login", authCtx.login);
+          // console.log("authctx.login", authCtx.login);
           console.log("Login succesfully");
           localStorage.setItem("idToken", data.idToken);
           localStorage.setItem("email", data.email);
@@ -75,13 +75,13 @@ export default function RegistrationPageByme() {
 
   const switchAuthModeHandler = () => {
     setIsLogin((prevState) => !prevState);
-    console.log("login status now", isLogin);
+    // console.log("login status now", isLogin);
   };
 
   return (
     <div className="bg-gradient-to-tl p-32 from-green-400 to-indigo-900 h-1/2 max-w-full ">
       <div className="bg-slate-50 bg-opacity-10 shadow-2xl rounded-3xl  p-7  h-30 m-auto w-[500px]">
-        <form onSubmit={submitHandler}>
+        <form action="submit" onSubmit={submitHandler}>
           {isLogin ? (
             <p className="font-black font-serif text-2xl ">
               Login to your account
