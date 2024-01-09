@@ -9,13 +9,16 @@ export default function ProfileForm() {
 
   const athCtx = useContext(AuthContext);
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
     console.log("ur in submithandler");
     const FullName = nameRef.current.value;
     const picUrl = urlRef.current.value;
     console.log("fullname  ", FullName, " and url is ", picUrl);
     // console.log("athtoken",athCtx.token);
+
+    // UPDATE INPUT DATA TO FIREBASE
+
     const updateProfileToFirebase = async () => {
       let url = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyB4n3mxcRsx9p4NlhU9Pawi75LNOUgQkr8`;
 
@@ -62,7 +65,48 @@ export default function ProfileForm() {
         console.log("Error config:", error.config);
       }
     };
-    updateProfileToFirebase();
+    await updateProfileToFirebase();
+
+    nameRef.current.value = "";
+    urlRef.current.value = "";
+
+    //GET PROFILE DATA FROM FIREBASE
+
+    const getProfileDataToFirebase = async () => {
+      let url = `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyB4n3mxcRsx9p4NlhU9Pawi75LNOUgQkr8`;
+      let token = athCtx.token || null;
+      if (!token) {
+        console.error("Token not found");
+        return;
+      }
+      console.log("token in fun", token);
+      const obj = {
+        idToken: token,
+      };
+      try {
+        const response = await axios.post(url, obj, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        console.log("Response inside fun", response);
+        console.log("Response.data", response.data);
+        console.log("Response.data.users", response.data.users);
+        const newArrOfObj = response.data.users;
+        console.log("newArrOfObj", newArrOfObj);
+
+        newArrOfObj.map((elm) =>{
+          console.log(elm.displayName, elm.photoUrl)
+            nameRef.current.value = elm.displayName;
+            urlRef.current.value = elm.photoUrl;
+        }
+        );
+      } catch (error) {
+        console.log("Error in getProfileFun", error);
+      }
+    };
+    await getProfileDataToFirebase();
   };
   return (
     <>
