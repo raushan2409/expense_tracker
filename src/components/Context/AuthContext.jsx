@@ -14,6 +14,12 @@ export const AuthContextProdvider = (props) => {
   const [token, setToken] = useState(localStorage.getItem("idToken"));
   const userIsLoggedIn = !!token;
 
+  const logoutHandler = () => {
+    localStorage.removeItem("idToken");
+    // setToken(null); 
+    setToken("");
+    // localStorage.removeItem("email");
+  };
   console.log("user is logged ",userIsLoggedIn);
 
   const loginHandler = (token) => {
@@ -23,7 +29,8 @@ export const AuthContextProdvider = (props) => {
   const contextValue = {
     token:token,
     isLoggedIn:userIsLoggedIn,
-    login:loginHandler
+    login:loginHandler,
+    logout:logoutHandler
   }
   return (
     <AuthContext.Provider value={contextValue}>

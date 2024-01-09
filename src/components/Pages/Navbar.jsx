@@ -1,8 +1,16 @@
 import axios from "axios";
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import AuthContext from "../Context/AuthContext";
 
 function Navbar() {
+  const navigate = useNavigate();
+  const { isLoggedIn, logout } = useContext(AuthContext);
+
+  const logoutHandler = () => {
+    logout();
+  };
+
   const verifyEmail = async () => {
     let url =
       "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyB4n3mxcRsx9p4NlhU9Pawi75LNOUgQkr8";
@@ -29,8 +37,6 @@ function Navbar() {
       console.log("Error in email handling", error);
     }
   };
-  // let email = localStorage.getItem("email");
-  // console.log("email is ", email);
 
   return (
     <>
@@ -49,6 +55,13 @@ function Navbar() {
             className=" text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
           >
             Verify Your Email
+          </button>
+          <button
+            onClick={logoutHandler}
+            type="button"
+            className=" text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+          >
+            Logout
           </button>
         </div>
       </div>
