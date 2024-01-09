@@ -4,6 +4,7 @@ import AuthContext from "../Context/AuthContext";
 import Navbar from "../Pages/Navbar";
 import RegistrationPageByme from "../Pages/RegistrationPageByme";
 import ProfileForm from "../Pages/ProfileForm";
+import ForgetPassword from "../Pages/ForgetPassword";
 
 export default function AllRoutes() {
   const authCtx = useContext(AuthContext);
@@ -20,6 +21,7 @@ export default function AllRoutes() {
       ) : (
         <Route path="/" element={<RegistrationPageByme />} />
       )}
+      <Route path="/forgetPassword" element={<ForgetPassword />} />
       <Route path="*" element={<RegistrationPageByme />} />
     </Routes>
   );
