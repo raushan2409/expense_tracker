@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../Context/AuthContext";
+import ExpensePage from "./ExpensePage";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -65,6 +66,7 @@ function Navbar() {
           </button>
         </div>
       </div>
+      <ExpensePage />
     </>
   );
 }
