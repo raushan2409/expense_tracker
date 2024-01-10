@@ -6,9 +6,8 @@ const AuthContext = createContext({
   login: (token) => {},
   logout: () => {},
   email: "",
-  
+  delete: () => {},
 });
-
 
 export const AuthContextProdvider = (props) => {
   const [token, setToken] = useState(localStorage.getItem("idToken"));
@@ -16,27 +15,33 @@ export const AuthContextProdvider = (props) => {
 
   const logoutHandler = () => {
     localStorage.removeItem("idToken");
-    // setToken(null); 
+    // setToken(null);
     setToken("");
     // localStorage.removeItem("email");
   };
-  console.log("user is logged ",userIsLoggedIn);
+  console.log("user is logged ", userIsLoggedIn);
 
   const loginHandler = (token) => {
     setToken(token);
   };
+  const expenseHandler = (expense) => {
+    console.log("Inside expense handler fun");
+    console.log("expense inside api ", expense);
+  };
+
+  const deleteHandler = (items, id) => {};
 
   const contextValue = {
-    token:token,
-    isLoggedIn:userIsLoggedIn,
-    login:loginHandler,
-    logout:logoutHandler
-  }
+    token: token,
+    isLoggedIn: userIsLoggedIn,
+    login: loginHandler,
+    logout: logoutHandler,
+    expenseHandler: expenseHandler,
+  };
   return (
     <AuthContext.Provider value={contextValue}>
-        {props.children}
+      {props.children}
     </AuthContext.Provider>
-  )
-
+  );
 };
 export default AuthContext;
