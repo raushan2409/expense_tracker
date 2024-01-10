@@ -9,83 +9,116 @@ export default function ExpensePage() {
   const date = useRef(null);
   const [expense, setExpense] = useState([]);
 
-  const { expenseHandler } = useContext(AuthContext);
+  const [edit, setEdit] = useState(false);
+  const [editedExpenseObj, setEditedExpense] = useState(null);
+  const [editedExpenseId, setEditedExpenseId] = useState(null);
+
+  const {
+    expenseHandler,
+    deleteHandle,
+    editHandle,
+    postDataToFirebase,
+    getTotalExpense,
+  } = useContext(AuthContext);
+
+  const deleteHandler = (items) => {
+    //delete from ui
+    const filteredElem = expense.filter((elem) => elem !== items);
+    setExpense(filteredElem);
+    deleteHandle(items.firebaseId);
+  };
+
+  const sumAllExp = getTotalExpense(expense);
+  const editHandler = (expen) => {
+    setEdit(true);
+    // console.log("inside edithandler ", expen);
+
+    expenseAmount.current.value = expen.expAmt;
+    description.current.value = expen.desc;
+    category.current.value = expen.categ;
+    date.current.value = expen.date;
+    // console.log(expen.firebaseId);
+    setEditedExpenseId(expen.firebaseId);
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log("Inside submitHandler");
-    // console.log("expAmount",expenseAmount,"\n desc ",description," \n categ ",category," \n date ",date);
-    const obj = {
-      expAmt: expenseAmount.current.value,
-      desc: description.current.value,
-      categ: category.current.value,
-      date: date.current.value,
-    };
-    // console.log("Obj inside the fun ", obj);
 
-    setExpense((prevExp) => [...prevExp, obj]);
-    console.log("Expense .....=>", expense);
+    if (edit) {
+      const updatedValues = {
+        expAmt: expenseAmount.current.value,
+        desc: description.current.value,
+        categ: category.current.value,
+        date: date.current.value,
+        firebaseId: editedExpenseId,
+      };
 
-    const postDataToFirebase = async () => {
-      let url = `https://expense-tracker-b82dc-default-rtdb.firebaseio.com/.json`;
-      try {
-        const response = await axios.post(url, obj);
-        console.log("response posted", response);
-      } catch (error) {
-        console.log("Error in postData", error);
-
-        if (error.response) {
-          console.log("Server responded with a non-2xx status");
-          console.log("Response data:", error.response.data);
-          console.log("HTTP status code:", error.response.status);
-          console.log("Headers:", error.response.headers);
-        } else if (error.request) {
-          console.log("Request was made but no response was received");
-          console.log("Request:", error.request);
-        } else {
-          console.log("Error during request setup:", error.message);
+      console.log(expense);
+      setEditedExpense(updatedValues)
+      const updatedArray = expense.map((item) => {
+        if (item.firebaseId === updatedValues.firebaseId) {
+          return updatedValues;
         }
-        console.log("Error config:", error.config);
-      }
-    };
-    await postDataToFirebase();
+        return item;
+      });
+      setExpense(updatedArray);
+    } else {
+      const obj = {
+        expAmt: expenseAmount.current.value,
+        desc: description.current.value,
+        categ: category.current.value,
+        date: date.current.value,
+      };
+
+      setExpense((prevExp) => [...prevExp, obj]);
+      console.log("Expense .....=>", expense);
+
+      await postDataToFirebase(obj);
+    }
+    expenseAmount.current.value = "";
+    description.current.value = "";
+    category.current.value = "";
+    date.current.value = "";
+    setEdit(false);
   };
+
+  if (editedExpenseObj && editedExpenseId) {
+    // console.log("EditedExpenobj ", editedExpenseObj);
+    // console.log("EditedExpenseId", editedExpenseId);
+
+    editHandle(editedExpenseObj, editedExpenseId);
+  }
 
   useEffect(() => {
     expenseHandler(expense);
   }, [expense, expenseHandler]);
 
-  const getTotalExpense = () => {
-    const total = expense.reduce((acc, exp) => acc + parseFloat(exp.expAmt), 0);
-    return total.toFixed(2);
-  };
-
   const getDataToFirebase = async () => {
-    
     let url = `https://expense-tracker-b82dc-default-rtdb.firebaseio.com/.json`;
     try {
       const response = await axios.get(url);
       // console.log("response in getData infirebase", response.data);
       let respObj = response.data;
       // console.log("New array",respObj);
-      // console.log("for loop niche hai ");
-      const newArrayOfValue = []
-      for (const key in respObj){
-        const value = respObj[key]
-        // console.log("value",value);
-        newArrayOfValue.push(value)
+
+      const newArrayOfValue = [];
+      for (const key in respObj) {
+        const value = respObj[key];
+        // console.log("value", value);
+        // console.log("key", key);
+
+        newArrayOfValue.push({ ...value, firebaseId: key });
       }
       setExpense(newArrayOfValue);
-      console.log("newArrayOfValue ",newArrayOfValue);
-      console.log("Expense value after newArray",expense);
-
+      // console.log("newArrayOfValue ",newArrayOfValue);
+      // console.log("Expense value after newArray", expense);
     } catch (error) {
       console.log("Error in GetData", error);
     }
   };
-  useEffect(()=>{
+  useEffect(() => {
     getDataToFirebase();
-  },[])
+  }, []);
 
   return (
     <>
@@ -137,13 +170,21 @@ export default function ExpensePage() {
               placeholder="dd-mm-yyyy"
             />
             <br />
-
-            <button
-              type="submit"
-              className="mt-3  ml-[35%] text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-            >
-              Add Expenses
-            </button>
+            {edit ? (
+              <button
+                type="submit"
+                className="mt-3  ml-[35%] text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+              >
+                Submit Edited Value
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="mt-3  ml-[35%] text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+              >
+                Add Expenses
+              </button>
+            )}
           </form>
         </div>
         {/* EXPENSE TRACKER FORM END*/}
@@ -153,7 +194,7 @@ export default function ExpensePage() {
             Total Expenses
           </h1>
           <p className="w-[90%] h-9 rounded-xl p-1 text-center bg-gradient-to-r from-orange-300 via-gray-600 to-green-300 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80  text-white font-semibold  bg-green-400 m-auto text-xl hover:cursor-not-allowed">
-            Rs. {getTotalExpense()}
+            Rs. {sumAllExp}
           </p>
         </div>
       </div>
@@ -170,6 +211,7 @@ export default function ExpensePage() {
               Rs. {exp.expAmt} - {exp.desc}
             </span>
             <button
+              onClick={() => editHandler(exp)}
               type="button"
               className="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 shadow-lg shadow-lime-500/50 dark:shadow-lg dark:shadow-lime-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-3"
             >
@@ -177,6 +219,7 @@ export default function ExpensePage() {
             </button>
             <button
               type="button"
+              onClick={() => deleteHandler(exp)}
               className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
             >
               Delete
