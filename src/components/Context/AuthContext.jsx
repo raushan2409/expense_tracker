@@ -25,8 +25,8 @@ export const AuthContextProdvider = (props) => {
     setToken(token);
   };
   const expenseHandler = (expense) => {
-    console.log("Inside expense handler fun");
-    console.log("expense inside api ", expense);
+    // console.log("Inside expense handler fun");
+    // console.log("expense inside api ", expense);
   };
 
   const deleteHandler = (items, id) => {};

@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import AuthContext from "../Context/AuthContext";
+import axios from "axios";
 
 export default function ExpensePage() {
   const expenseAmount = useRef(null);
@@ -10,7 +11,7 @@ export default function ExpensePage() {
 
   const { expenseHandler } = useContext(AuthContext);
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
     console.log("Inside submitHandler");
     // console.log("expAmount",expenseAmount,"\n desc ",description," \n categ ",category," \n date ",date);
@@ -23,15 +24,68 @@ export default function ExpensePage() {
     // console.log("Obj inside the fun ", obj);
 
     setExpense((prevExp) => [...prevExp, obj]);
-    console.log("Expense befor fun", expense);
+    console.log("Expense .....=>", expense);
+
+    const postDataToFirebase = async () => {
+      let url = `https://expense-tracker-b82dc-default-rtdb.firebaseio.com/.json`;
+      try {
+        const response = await axios.post(url, obj);
+        console.log("response posted", response);
+      } catch (error) {
+        console.log("Error in postData", error);
+
+        if (error.response) {
+          console.log("Server responded with a non-2xx status");
+          console.log("Response data:", error.response.data);
+          console.log("HTTP status code:", error.response.status);
+          console.log("Headers:", error.response.headers);
+        } else if (error.request) {
+          console.log("Request was made but no response was received");
+          console.log("Request:", error.request);
+        } else {
+          console.log("Error during request setup:", error.message);
+        }
+        console.log("Error config:", error.config);
+      }
+    };
+    await postDataToFirebase();
   };
+
   useEffect(() => {
     expenseHandler(expense);
   }, [expense, expenseHandler]);
+
   const getTotalExpense = () => {
     const total = expense.reduce((acc, exp) => acc + parseFloat(exp.expAmt), 0);
     return total.toFixed(2);
   };
+
+  const getDataToFirebase = async () => {
+    
+    let url = `https://expense-tracker-b82dc-default-rtdb.firebaseio.com/.json`;
+    try {
+      const response = await axios.get(url);
+      // console.log("response in getData infirebase", response.data);
+      let respObj = response.data;
+      // console.log("New array",respObj);
+      // console.log("for loop niche hai ");
+      const newArrayOfValue = []
+      for (const key in respObj){
+        const value = respObj[key]
+        // console.log("value",value);
+        newArrayOfValue.push(value)
+      }
+      setExpense(newArrayOfValue);
+      console.log("newArrayOfValue ",newArrayOfValue);
+      console.log("Expense value after newArray",expense);
+
+    } catch (error) {
+      console.log("Error in GetData", error);
+    }
+  };
+  useEffect(()=>{
+    getDataToFirebase();
+  },[])
 
   return (
     <>
