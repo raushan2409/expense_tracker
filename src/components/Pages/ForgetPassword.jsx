@@ -1,5 +1,4 @@
 import React, { useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import Loader from "./Loader";
 import axios from "axios";
 
@@ -8,11 +7,9 @@ export default function ForgetPassword() {
   const [loader, setLoader] = useState(false);
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log(emailRef.current.value);
-
+    // console.log(emailRef.current.value);
     let email = emailRef.current.value;
     localStorage.setItem("ForgetPasswordEmail", email);
-
     setLoader(true);
     const forgetPassword = async (email) => {
       let url =
@@ -56,18 +53,6 @@ export default function ForgetPassword() {
             required
             ref={emailRef}
           />
-          {/* <label
-            htmlFor="password"
-            className="mb-2 hover:font-serif hover:text-2xl font-medium"
-          >
-            Password
-          </label>
-          <br />
-          <input
-            className="bg-slate-200 rounded-md  mb-7  w-[85%] h-9 mt-1 shadow-[inset_-12px_-8px_40px_#46464620]"
-            type="password"
-            id="password"
-          /> */}
           <br />
 
           <>

@@ -14,24 +14,18 @@ export default function RegistrationPageByme() {
   const navigate = useNavigate();
 
   const authCtx = useContext(AuthContext);
-  // console.log("authCtx", authCtx);
 
   const submitHandler = (e) => {
     e.preventDefault();
 
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
-    const confirmPassword = confirmPasswordRef.current.value;
-
-    if (password !== confirmPassword) {
-      console.log("Passwords don't match");
-      console.log(
-        "Password is ",
-        password,
-        " and confirm pass",
-        confirmPassword
-      );
-      return;
+    const confirmPassword = confirmPasswordRef.current?.value || "";
+    if (isLogin) {
+      // User is not logged in
+      if (password !== confirmPassword) {
+        console.log("Please enter the correct password in both input boxes");
+      }
     }
     console.log("Email", email, " Password:", password);
 
@@ -75,7 +69,7 @@ export default function RegistrationPageByme() {
 
   const switchAuthModeHandler = () => {
     setIsLogin((prevState) => !prevState);
-    // console.log("login status now", isLogin);
+    console.log("login status now", isLogin);
   };
 
   return (
@@ -105,33 +99,54 @@ export default function RegistrationPageByme() {
             required
             ref={emailRef}
           />
-          <label
-            htmlFor="password"
-            className="mb-2 hover:font-serif hover:text-2xl font-medium"
-          >
-            Password
-          </label>
-          <br />
-          <input
-            className="bg-slate-200 rounded-md  mb-7  w-[85%] h-9 mt-1 shadow-[inset_-12px_-8px_40px_#46464620]"
-            type="password"
-            id="password"
-            ref={passwordRef}
-          />
-          <br />
-          <label
-            htmlFor="confirmPassword"
-            className="mb-2 hover:font-serif hover:text-2xl font-medium "
-          >
-            Confirm Password
-          </label>
+          {isLogin ? (
+            <>
+              <label
+                htmlFor="password"
+                className="mb-2 hover:font-serif hover:text-2xl font-medium"
+              >
+                Password
+              </label>
+              <br />
+              <input
+                className="bg-slate-200 rounded-md  mb-7  w-[85%] h-9 mt-1 shadow-[inset_-12px_-8px_40px_#46464620]"
+                type="password"
+                id="password"
+                ref={passwordRef}
+              />
+            </>
+          ) : (
+            <>
+              <label
+                htmlFor="password"
+                className="mb-2 hover:font-serif hover:text-2xl font-medium"
+              >
+                Password
+              </label>
+              <br />
+              <input
+                className="bg-slate-200 rounded-md  mb-7  w-[85%] h-9 mt-1 shadow-[inset_-12px_-8px_40px_#46464620]"
+                type="password"
+                id="password"
+                ref={passwordRef}
+              />
+              <br />
+              <label
+                htmlFor="confirmPassword"
+                className="mb-2 hover:font-serif hover:text-2xl font-medium "
+              >
+                Confirm Password
+              </label>
 
-          <input
-            className="bg-slate-200 rounded-md  mb-7  shadow-[inset_-12px_-8px_40px_#46464620] w-[85%] h-9 mt-1 "
-            type="password"
-            id="confirmPassword"
-            ref={confirmPasswordRef}
-          />
+              <input
+                className="bg-slate-200 rounded-md  mb-7  shadow-[inset_-12px_-8px_40px_#46464620] w-[85%] h-9 mt-1 "
+                type="password"
+                id="confirmPassword"
+                ref={confirmPasswordRef}
+              />
+            </>
+          )}
+
           <br />
           {/* npx tailwindcss -i ./src/input.css -o ./dist/style.css   fir --watch */}
 

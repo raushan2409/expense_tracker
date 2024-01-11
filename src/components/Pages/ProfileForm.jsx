@@ -15,7 +15,6 @@ export default function ProfileForm() {
     const FullName = nameRef.current.value;
     const picUrl = urlRef.current.value;
     console.log("fullname  ", FullName, " and url is ", picUrl);
-    // console.log("athtoken",athCtx.token);
 
     // UPDATE INPUT DATA TO FIREBASE
 
@@ -50,7 +49,6 @@ export default function ProfileForm() {
           throw new Error(errorMsg);
         }
       } catch (error) {
-        // console.log("error in catch block", err);
         if (error.response) {
           console.log("Server responded with a non-2xx status");
           console.log("Response data:", error.response.data);
@@ -90,18 +88,17 @@ export default function ProfileForm() {
           },
         });
 
-        console.log("Response inside fun", response);
-        console.log("Response.data", response.data);
-        console.log("Response.data.users", response.data.users);
+        // console.log("Response inside fun", response);
+        // console.log("Response.data", response.data);
+        // console.log("Response.data.users", response.data.users);
         const newArrOfObj = response.data.users;
         console.log("newArrOfObj", newArrOfObj);
 
-        newArrOfObj.map((elm) =>{
-          console.log(elm.displayName, elm.photoUrl)
-            nameRef.current.value = elm.displayName;
-            urlRef.current.value = elm.photoUrl;
-        }
-        );
+        newArrOfObj.map((elm) => {
+          console.log(elm.displayName, elm.photoUrl);
+          nameRef.current.value = elm.displayName;
+          urlRef.current.value = elm.photoUrl;
+        });
       } catch (error) {
         console.log("Error in getProfileFun", error);
       }

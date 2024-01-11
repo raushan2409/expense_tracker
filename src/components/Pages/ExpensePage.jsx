@@ -21,6 +21,7 @@ export default function ExpensePage() {
     getTotalExpense,
   } = useContext(AuthContext);
 
+  // DELETE THE VALUE FROM UI AS WELL AS DB
   const deleteHandler = (items) => {
     //delete from ui
     const filteredElem = expense.filter((elem) => elem !== items);
@@ -28,22 +29,23 @@ export default function ExpensePage() {
     deleteHandle(items.firebaseId);
   };
 
+  // ADD ALL THE EXPNESE
   const sumAllExp = getTotalExpense(expense);
+
+  // WHEN USER CLICK FIRST TIME THAN THIS FUN WILL GET CALL AND FILL THE VALUE IN INPUT BOX THAT U WONNA EDIT
   const editHandler = (expen) => {
     setEdit(true);
-    // console.log("inside edithandler ", expen);
-
     expenseAmount.current.value = expen.expAmt;
     description.current.value = expen.desc;
     category.current.value = expen.categ;
     date.current.value = expen.date;
-    // console.log(expen.firebaseId);
     setEditedExpenseId(expen.firebaseId);
   };
 
   const submitHandler = async (e) => {
     e.preventDefault();
 
+    // IF EDIT IS TRUE THAN BUTTON WILL CHANGE IF FALSE THAN NORMAL FUN
     if (edit) {
       const updatedValues = {
         expAmt: expenseAmount.current.value,
@@ -52,9 +54,7 @@ export default function ExpensePage() {
         date: date.current.value,
         firebaseId: editedExpenseId,
       };
-
-      console.log(expense);
-      setEditedExpense(updatedValues)
+      setEditedExpense(updatedValues);
       const updatedArray = expense.map((item) => {
         if (item.firebaseId === updatedValues.firebaseId) {
           return updatedValues;
@@ -69,10 +69,8 @@ export default function ExpensePage() {
         categ: category.current.value,
         date: date.current.value,
       };
-
       setExpense((prevExp) => [...prevExp, obj]);
       console.log("Expense .....=>", expense);
-
       await postDataToFirebase(obj);
     }
     expenseAmount.current.value = "";
@@ -81,37 +79,28 @@ export default function ExpensePage() {
     date.current.value = "";
     setEdit(false);
   };
-
   if (editedExpenseObj && editedExpenseId) {
-    // console.log("EditedExpenobj ", editedExpenseObj);
-    // console.log("EditedExpenseId", editedExpenseId);
-
     editHandle(editedExpenseObj, editedExpenseId);
   }
-
   useEffect(() => {
     expenseHandler(expense);
   }, [expense, expenseHandler]);
+
+  //    GET DATA TO FIREBASE
 
   const getDataToFirebase = async () => {
     let url = `https://expense-tracker-b82dc-default-rtdb.firebaseio.com/.json`;
     try {
       const response = await axios.get(url);
-      // console.log("response in getData infirebase", response.data);
       let respObj = response.data;
-      // console.log("New array",respObj);
 
       const newArrayOfValue = [];
       for (const key in respObj) {
         const value = respObj[key];
-        // console.log("value", value);
-        // console.log("key", key);
 
         newArrayOfValue.push({ ...value, firebaseId: key });
       }
       setExpense(newArrayOfValue);
-      // console.log("newArrayOfValue ",newArrayOfValue);
-      // console.log("Expense value after newArray", expense);
     } catch (error) {
       console.log("Error in GetData", error);
     }
@@ -187,8 +176,9 @@ export default function ExpensePage() {
             )}
           </form>
         </div>
-        {/* EXPENSE TRACKER FORM END*/}
+
         {/* RIGHT PART TOTAL EXPENSE PART START */}
+
         <div className="max-h-fit h-fit bg-neutral-100 mt-8 hover:p-10 hover:bg-slate-50 w-auto max-w-fit  shadow-2xl rounded-xl p-4">
           <h1 className="text-2xl  font-semibold hover:text-3xl hover:text-green-950 p-2 underline">
             Total Expenses
@@ -198,7 +188,7 @@ export default function ExpensePage() {
           </p>
         </div>
       </div>
-      {/* RIGHT PART TOTAL EXPENSE PART END HERE*/}
+
       {/* BOTTOM PART CURRENT EXPENSE THAT U'VE ENTERED IN UR FORM STARTS*/}
 
       <div className="max-h-fit h-fit bg-neutral-100 mt-8  hover:bg-slate-50 w-auto max-w-fit   shadow-inner mx-5 rounded-md p-5">

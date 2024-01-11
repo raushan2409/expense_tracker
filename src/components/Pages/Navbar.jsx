@@ -1,12 +1,11 @@
 import axios from "axios";
 import React, { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import AuthContext from "../Context/AuthContext";
 import ExpensePage from "./ExpensePage";
 
 function Navbar() {
-  const navigate = useNavigate();
-  const { isLoggedIn, logout } = useContext(AuthContext);
+  const { logout } = useContext(AuthContext);
 
   const logoutHandler = () => {
     logout();
